@@ -15,7 +15,7 @@ The model was trained with the Parkinson's Disease Detection Dataset and provide
 - User input prediction (사용자 입력을 통한 예측)
 - Random sample prediction (랜덤 예시 데이터로 예측)
 - Prediction probability (예측 확률 제공)
-- SHAP explainability (SHAP을 통한 feature 영향도 시각화)
+- Feature importance visualization (Model-based) (모델 기반 특성 중요도 시각화)
 
 ---
 

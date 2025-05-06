@@ -2,7 +2,6 @@ import streamlit as st
 import pickle
 import numpy as np
 import pandas as pd
-import shap
 
 # ====== Load scaler + model ======
 with open("models/parkinson_classification_pipeline.pkl", "rb") as f:
@@ -47,17 +46,16 @@ if st.button("Predict with Random Sample"):
     else:
         st.success(f"✅ No Parkinson's Disease Detected (Probability: {prediction_proba:.2f})")
 
-    st.subheader("📊 Feature Importance (SHAP Values)")
-    explainer = shap.TreeExplainer(model)
-    shap_values = explainer(random_scaled)
-    shap_df = pd.DataFrame({
+    # Feature importance from model
+    st.subheader("📊 Feature Importance (Model Based)")
+    importances = model.feature_importances_
+    importance_df = pd.DataFrame({
         "Feature": feature_names,
-        "SHAP Value": shap_values.values[0].flatten()
-    }).sort_values(by="SHAP Value", ascending=False)
+        "Importance": importances
+    }).sort_values(by="Importance", ascending=False)
 
-    st.dataframe(shap_df)
-    st.write("Feature importance (SHAP Bar Plot):")
-    shap.plots.bar(shap_values)
+    st.dataframe(importance_df)
+    st.bar_chart(importance_df.set_index("Feature"))
 
 # ====== User Input Prediction ======
 st.subheader("📝 Predict with Your Own Input")
@@ -79,14 +77,13 @@ if st.button("Predict Parkinson's"):
     else:
         st.success(f"✅ No Parkinson's Disease Detected (Probability: {prediction_proba:.2f})")
 
-    st.subheader("📊 Feature Importance (SHAP Values)")
-    explainer = shap.TreeExplainer(model)
-    shap_values = explainer(user_data_scaled)
-    shap_df = pd.DataFrame({
+    # Feature importance from model
+    st.subheader("📊 Feature Importance (Model Based)")
+    importances = model.feature_importances_
+    importance_df = pd.DataFrame({
         "Feature": feature_names,
-        "SHAP Value": shap_values.values[0].flatten()
-    }).sort_values(by="SHAP Value", ascending=False)
+        "Importance": importances
+    }).sort_values(by="Importance", ascending=False)
 
-    st.dataframe(shap_df)
-    st.write("Feature importance (SHAP Bar Plot):")
-    shap.plots.bar(shap_values)
+    st.dataframe(importance_df)
+    st.bar_chart(importance_df.set_index("Feature"))
