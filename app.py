@@ -1,5 +1,3 @@
-# app.py
-
 import streamlit as st
 import pickle
 import numpy as np
@@ -9,6 +7,13 @@ import shap
 # ====== Load scaler + model ======
 with open("models/parkinson_classification_pipeline.pkl", "rb") as f:
     scaler, model = pickle.load(f)
+
+# ====== Load sample data ======
+@st.cache_data
+def load_sample_data():
+    return pd.read_csv("parkinsons.csv")
+
+sample_data = load_sample_data()
 
 # ====== Feature names ======
 feature_names = [
@@ -22,7 +27,6 @@ feature_names = [
 # ====== App title ======
 st.title("🧠 Parkinson's Disease Prediction App")
 
-st.write("아래 음성 측정 데이터를 입력하세요.")
 st.write("Please enter the following voice measurement values:")
 
 # ====== User Input ======
@@ -35,38 +39,56 @@ user_data = np.array(user_data).reshape(1, -1)
 
 # ====== Prediction ======
 if st.button("Predict Parkinson's"):
-    # preprocess (Scaler)
     user_data_scaled = scaler.transform(user_data)
-
-    # predict
     prediction = model.predict(user_data_scaled)[0]
     prediction_proba = model.predict_proba(user_data_scaled)[0][1]
 
-    # Display result
     if prediction == 1:
         st.error(f"🚨 Parkinson's Disease Detected (Probability: {prediction_proba:.2f})")
     else:
         st.success(f"✅ No Parkinson's Disease Detected (Probability: {prediction_proba:.2f})")
 
-    # ====== SHAP Explainability ======
+    # Explainability
     st.subheader("📊 Feature Importance (SHAP Values)")
-
-    # Prepare SHAP explainer based on model
     explainer = shap.TreeExplainer(model)
-
-    # Calculate SHAP values for the input sample
     shap_values = explainer(user_data_scaled)
-
-    # Organize SHAP values into DataFrame
     shap_df = pd.DataFrame({
         "Feature": feature_names,
         "SHAP Value": shap_values.values[0]
     }).sort_values(by="SHAP Value", ascending=False)
 
-    # Display feature importance as DataFrame
     st.dataframe(shap_df)
+    st.write("Feature importance (SHAP Bar Plot):")
+    shap.plots.bar(shap_values)
 
-    # Bar plot visualization
+# ====== Random Example Data Prediction ======
+st.subheader("🎲 Test with Random Example Data")
+
+if st.button("Predict with Random Sample"):
+    random_sample = sample_data.sample(1)
+    st.write("Selected Example Data:")
+    st.dataframe(random_sample)
+
+    random_features = random_sample[feature_names].values.reshape(1, -1)
+    random_scaled = scaler.transform(random_features)
+    prediction = model.predict(random_scaled)[0]
+    prediction_proba = model.predict_proba(random_scaled)[0][1]
+
+    if prediction == 1:
+        st.error(f"🚨 Parkinson's Disease Detected (Probability: {prediction_proba:.2f})")
+    else:
+        st.success(f"✅ No Parkinson's Disease Detected (Probability: {prediction_proba:.2f})")
+
+    # Explainability
+    st.subheader("📊 Feature Importance (SHAP Values)")
+    explainer = shap.TreeExplainer(model)
+    shap_values = explainer(random_scaled)
+    shap_df = pd.DataFrame({
+        "Feature": feature_names,
+        "SHAP Value": shap_values.values[0]
+    }).sort_values(by="SHAP Value", ascending=False)
+
+    st.dataframe(shap_df)
     st.write("Feature importance (SHAP Bar Plot):")
     shap.plots.bar(shap_values)
 
