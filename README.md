@@ -19,7 +19,7 @@ The model was trained with the Parkinson's Disease Detection Dataset and provide
 
 ---
 
-## 📚 Citation
+## Citation
 
 If you use this dataset, please cite the following paper:
 
