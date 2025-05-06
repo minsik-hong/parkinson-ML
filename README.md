@@ -10,7 +10,7 @@ The model was trained with the Parkinson's Disease Detection Dataset and provide
 
 ---
 
-## Features (주요 기능)
+## Features
 
 - User input prediction (사용자 입력을 통한 예측)
 - Random sample prediction (랜덤 예시 데이터로 예측)
