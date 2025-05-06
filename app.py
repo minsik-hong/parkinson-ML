@@ -11,7 +11,7 @@ with open("models/parkinson_classification_pipeline.pkl", "rb") as f:
 # ====== Load sample data ======
 @st.cache_data
 def load_sample_data():
-    return pd.read_csv("Parkinsson disease.csv")
+    return pd.read_csv("data/Parkinsson disease.csv")
 
 sample_data = load_sample_data()
 
