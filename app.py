@@ -29,38 +29,6 @@ st.title("🧠 Parkinson's Disease Prediction App")
 
 st.write("Please enter the following voice measurement values:")
 
-# ====== User Input ======
-user_data = []
-for feature in feature_names:
-    value = st.number_input(f"{feature}", value=0.0)
-    user_data.append(value)
-
-user_data = np.array(user_data).reshape(1, -1)
-
-# ====== Prediction ======
-if st.button("Predict Parkinson's"):
-    user_data_scaled = scaler.transform(user_data)
-    prediction = model.predict(user_data_scaled)[0]
-    prediction_proba = model.predict_proba(user_data_scaled)[0][1]
-
-    if prediction == 1:
-        st.error(f"🚨 Parkinson's Disease Detected (Probability: {prediction_proba:.2f})")
-    else:
-        st.success(f"✅ No Parkinson's Disease Detected (Probability: {prediction_proba:.2f})")
-
-    # Explainability
-    st.subheader("📊 Feature Importance (SHAP Values)")
-    explainer = shap.TreeExplainer(model)
-    shap_values = explainer(user_data_scaled)
-    shap_df = pd.DataFrame({
-        "Feature": feature_names,
-        "SHAP Value": shap_values.values[0]
-    }).sort_values(by="SHAP Value", ascending=False)
-
-    st.dataframe(shap_df)
-    st.write("Feature importance (SHAP Bar Plot):")
-    shap.plots.bar(shap_values)
-
 # ====== Random Example Data Prediction ======
 st.subheader("🎲 Test with Random Example Data")
 
@@ -79,16 +47,46 @@ if st.button("Predict with Random Sample"):
     else:
         st.success(f"✅ No Parkinson's Disease Detected (Probability: {prediction_proba:.2f})")
 
-    # Explainability
     st.subheader("📊 Feature Importance (SHAP Values)")
     explainer = shap.TreeExplainer(model)
     shap_values = explainer(random_scaled)
     shap_df = pd.DataFrame({
         "Feature": feature_names,
-        "SHAP Value": shap_values.values[0]
+        "SHAP Value": shap_values.values[0].flatten()
     }).sort_values(by="SHAP Value", ascending=False)
 
     st.dataframe(shap_df)
     st.write("Feature importance (SHAP Bar Plot):")
     shap.plots.bar(shap_values)
 
+# ====== User Input Prediction ======
+st.subheader("📝 Predict with Your Own Input")
+
+user_data = []
+for feature in feature_names:
+    value = st.number_input(f"{feature}", value=0.0)
+    user_data.append(value)
+
+user_data = np.array(user_data).reshape(1, -1)
+
+if st.button("Predict Parkinson's"):
+    user_data_scaled = scaler.transform(user_data)
+    prediction = model.predict(user_data_scaled)[0]
+    prediction_proba = model.predict_proba(user_data_scaled)[0][1]
+
+    if prediction == 1:
+        st.error(f"🚨 Parkinson's Disease Detected (Probability: {prediction_proba:.2f})")
+    else:
+        st.success(f"✅ No Parkinson's Disease Detected (Probability: {prediction_proba:.2f})")
+
+    st.subheader("📊 Feature Importance (SHAP Values)")
+    explainer = shap.TreeExplainer(model)
+    shap_values = explainer(user_data_scaled)
+    shap_df = pd.DataFrame({
+        "Feature": feature_names,
+        "SHAP Value": shap_values.values[0].flatten()
+    }).sort_values(by="SHAP Value", ascending=False)
+
+    st.dataframe(shap_df)
+    st.write("Feature importance (SHAP Bar Plot):")
+    shap.plots.bar(shap_values)
