@@ -1,8 +1,8 @@
-# Parkinson's Disease Prediction App
+# Parkinson's Disease Prediction
 
 https://parkinson-machinelearning-app.streamlit.app/
 
-This is a Streamlit web app to predict Parkinson's disease using voice measurement data.  
+This is a Streamlit web to predict Parkinson's disease using voice measurement data.  
 The model was trained with the Parkinson's Disease Detection Dataset and provides explainability through SHAP values.
 
 본 프로젝트는 음성 데이터를 기반으로 파킨슨병 여부를 예측하는 Streamlit 웹 앱입니다.  
